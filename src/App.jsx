@@ -4,9 +4,9 @@ import './styles/styles.css'
 
 function App () {
   const example = useRef(null)
-  $(document).ready(function () {
-    $('#example').DataTable()
-  })
+  // $(document).ready(function () {
+  //   $('#example').DataTable()
+  // })
   useEffect(() => {
     // console.log('useRef',example.current)
     // console.log('JQuery',$('#example'))
@@ -22,7 +22,6 @@ function App () {
 
     for (j = 0; j < tab.rows.length; j++) {
       tab_text = tab_text + tab.rows[j].innerHTML + '</tr>'
-      //tab_text=tab_text+"</tr>";
     }
 
     tab_text = tab_text + '</table>'
@@ -31,7 +30,7 @@ function App () {
     tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, '') // reomves input params
 
     var ua = window.navigator.userAgent
-    var msie = ua.indexOf('MSIE ')
+    var msie = ua.indexOf('MSIE')
     let sa
     if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
       // If Internet Explorer
@@ -52,17 +51,50 @@ function App () {
 
     return sa
   }
+
+  function exportTableToExcel (tableID, filename = 'asd') {
+    var downloadLink
+    var dataType = 'application/vnd.ms-excel'
+    var tableSelect = document.getElementById(tableID)
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20')
+
+    // Specify file name
+    filename = filename ? filename + '.xls' : 'excel_data.xls'
+
+    // Create download link element
+    downloadLink = document.createElement('a')
+
+    document.body.appendChild(downloadLink)
+
+    if (navigator.msSaveOrOpenBlob) {
+      console.log('iggff')
+      var blob = new Blob(['\ufeff', tableHTML], {
+        type: dataType
+      })
+      navigator.msSaveOrOpenBlob(blob, filename)
+    } else {
+      console.log('else22')
+      // Create a link to the file
+      downloadLink.href = 'data:' + dataType + ', ' + tableHTML
+      // Setting the file name
+      downloadLink.download = filename
+
+      //triggering the function
+      downloadLink.click()
+    }
+  }
   return (
     <div>
-      <button onClick={fnExcelReport}>EXPORTAR</button>
+      <button onClick={()=>{exportTableToExcel('example')}}>EXPORTAR</button>
       <table
+        border='2px'
         ref={example}
         id='example'
         className='display'
         style={{ width: '80%' }}
       >
         <thead>
-          <tr>
+          <tr style={{backgroundColor: 'red'}}>
             <th>Name</th>
             <th>Position</th>
             <th>Office</th>
@@ -72,7 +104,7 @@ function App () {
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr bgcolor='blue'>
             <td>Tiger Nixon</td>
             <td>System Architect</td>
             <td>Edinburgh</td>
